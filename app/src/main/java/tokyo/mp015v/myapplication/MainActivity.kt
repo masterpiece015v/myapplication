@@ -5,32 +5,47 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Switch
 import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.ceil
 
 class MainActivity : AppCompatActivity() {
-    lateinit var edt_quantity : EditText
-    lateinit var edt_bid : EditText
-    lateinit var txt_total : TextView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        
-        edt_quantity = findViewById<EditText>(R.id.edt_quantity)
-        edt_bid = findViewById<EditText>(R.id.edt_bid)
-        txt_total = findViewById<TextView>(R.id.txt_total)
+        //viewを変数にして操作できるようにする
+        val edtQuantity : EditText=findViewById(R.id.edt_quantity) as EditText
+        val edtDid : EditText = findViewById(R.id.edt_bid) as EditText
+        val txtTotal : TextView = findViewById(R.id.txt_total) as TextView
+        val btnCalc : Button = findViewById(R.id.btn_calc) as Button
+        val swtTax :Switch = findViewById( R.id.swt_tax ) as Switch
 
-        //イベントの割り当て
-        findViewById<Button>(R.id.btn_calc).setOnClickListener {
-            btn_calc_onClick( it )
+        //btn_calcのクリックイベントイベントの割り当て
+        btnCalc.setOnClickListener {
+            //数量の取得
+            val quantity = Integer.parseInt( edtQuantity.text.toString() )
+            //単価の取得
+            val bid = Integer.parseInt( edtDid.text.toString() )
+            //消費税のチェック
+            val chktax = swtTax.isChecked
+            //税率
+            val taxrate = if( chktax ) 0.1 else 0.08
+            //税金
+            val sum = quantity * bid
+            //金額の計算
+            val total = ceil(sum * ( 1 + taxrate )).toInt()
+            //金額の表示
+            txtTotal.text = total.toString()
         }
-    }
 
-    //計算ボタンクリックイベント
-    fun btn_calc_onClick( it : View){
-        txt_total.text = edt_quantity.text.toString()
-
+        //chk_taxのチェンジイベント
+        swtTax.setOnCheckedChangeListener { buttonView, isChecked ->
+            swtTax.text = if( isChecked ){ "10%" }else{ "8%" }
+        }
     }
 
 
